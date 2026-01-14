@@ -1,53 +1,53 @@
-# Maze in `python` using `pygame`
+# Maze trong `python` sử dụng `pygame`
 
-## Evuri Mohana Sreedhara Reddy
+## Doan Tuan Kiet
 
 ### CS-108 Project - Spring 2023-24
 
 ---
 
-## Abstract
+## Tóm tắt
 
-This report outlines the development process of the game "Lost in the Maze: A PYGAME Adventure," a 2D maze navigation game. It covers the game's concept, design, implementation, and the challenges encountered during development. The report aims to provide a comprehensive overview that enables understanding and playing the game without direct access to its source code.
-
----
-
-## Table of Contents
-
-1. [Introduction to my Game](#introduction-to-my-game)
-2. [Modules](#modules)
-3. [Directory Structure](#directory-structure)
-4. [Running Instructions](#running-instructions)
-   1. [Prerequisites](#prerequisites)
-   2. [Game Navigation and Gameplay](#game-navigation-and-gameplay)
-5. [Various Implementations in the Code](#various-implementations-in-the-code)
-   1. [Customizations in the Game](#customizations-in-the-game)
-6. [References](#references)
+Báo cáo này trình bày quá trình phát triển trò chơi "Lost in the Maze: A PYGAME Adventure" (Lạc trong Mê Cung: Cuộc Phiêu Lưu PYGAME), một trò chơi điều hướng mê cung 2D. Nó bao gồm khái niệm trò chơi, thiết kế, triển khai và các thách thức gặp phải trong quá trình phát triển. Báo cáo nhằm cung cấp cái nhìn tổng quan toàn diện cho phép hiểu và chơi trò chơi mà không cần truy cập trực tiếp vào mã nguồn.
 
 ---
 
-## Introduction to my Game
+## Mục lục
 
-This game aims to complete the mazes generated as quickly as possible. The high scores equivalent - _Least Time Taken_ are also based on this.
-
----
-
-## Modules
-
-The external modules used are:
-
-- `pygame-ce` - The frequently updated pygame community edition version of pygame is a set of Python modules designed for writing video games.
-- `Random` - A module that implements pseudo-random number generators for various distributions.
-- `Sys` - A module that provides access to some variables used or maintained by the interpreter and functions that interact with the interpreter.
-- `Time` - A module that provides various time-related functions.
-- `os` - A module that provides a portable way of using operating system-dependent functionality.
-- `heapq` - A module that implements heap queues. I used this module to implement the priority queue for the A\* algorithm.
+1. [Giới thiệu về Trò chơi của tôi](#giới-thiệu-về-trò-chơi-của-tôi)
+2. [Các Mô-đun](#các-mô-đun)
+3. [Cấu trúc Thư mục](#cấu-trúc-thư-mục)
+4. [Hướng dẫn Chạy](#hướng-dẫn-chạy)
+   1. [Điều kiện tiên quyết](#điều-kiện-tiên-quyết)
+   2. [Điều hướng trò chơi và Cách chơi](#điều-hướng-trò-chơi-và-cách-chơi)
+5. [Các Triển khai Khác nhau trong Mã](#các-triển-khai-khác-nhau-trong-mã)
+   1. [Tùy chỉnh trong Trò chơi](#tùy-chỉnh-trong-trò-chơi)
+6. [Tài liệu tham khảo](#tài-liệu-tham-khảo)
 
 ---
 
-## Directory Structure
+## Giới thiệu về Trò chơi của tôi
 
-The project directory is as follows:
+Trò chơi này nhằm hoàn thành các mê cung được tạo ra càng nhanh càng tốt. Điểm cao tương đương - _Thời gian tối thiểu được sử dụng_ cũng dựa trên điều này.
+
+---
+
+## Các Mô-đun
+
+Các mô-đun bên ngoài được sử dụng là:
+
+- `pygame-ce` - Phiên bản pygame cộng đồng được cập nhật thường xuyên của pygame là một tập hợp các mô-đun Python được thiết kế để viết trò chơi video.
+- `Random` - Một mô-đun triển khai các bộ tạo số ngẫu nhiên giả cho các phân phối khác nhau.
+- `Sys` - Một mô-đun cung cấp quyền truy cập vào một số biến được sử dụng hoặc duy trì bởi trình thông dịch và các hàm tương tác với trình thông dịch.
+- `Time` - Một mô-đun cung cấp các hàm liên quan đến thời gian khác nhau.
+- `os` - Một mô-đun cung cấp cách sử dụng các chức năng phụ thuộc vào hệ điều hành theo cách di động.
+- `heapq` - Một mô-đun triển khai hàng đợi heap. Tôi đã sử dụng mô-đun này để triển khai hàng đợi ưu tiên cho thuật toán A\*.
+
+---
+
+## Cấu trúc Thư mục
+
+Thư mục dự án như sau:
 
 ```
 .
@@ -68,23 +68,23 @@ The project directory is as follows:
 └── settings.py
 ```
 
-- **`game.py`** - The main game loop.
-- **`settings.py`** - Contains all the global variables and modules necessary for the game to function smoothly.
-- **`Modules`** - The programs that manage various game parts.
-- **`media`** - Contains all the images, sounds, and fonts used in the game.
-- **`data`** - Contains the path of the maze and the High ScoreCard (Least Time Taken).
+- **`game.py`** - Vòng lặp trò chơi chính.
+- **`settings.py`** - Chứa tất cả các biến toàn cục và mô-đun cần thiết để trò chơi hoạt động suôn sẻ.
+- **`Modules`** - Các chương trình quản lý các phần khác nhau của trò chơi.
+- **`media`** - Chứa tất cả các hình ảnh, âm thanh và phông chữ được sử dụng trong trò chơi.
+- **`data`** - Chứa đường dẫn của mê cung và Bảng điểm cao (Thời gian tối thiểu được sử dụng).
 
 ---
 
-## Running Instructions
+## Hướng dẫn Chạy
 
-### Prerequisites
+### Điều kiện tiên quyết
 
-Note: It is assumed that Python is already installed.
+Lưu ý: Giả định rằng Python đã được cài đặt.
 
-#### Setting up `venv`
+#### Thiết lập `venv`
 
-If you want to set up a `python` virtual environment for the project, follow the below instructions:
+Nếu bạn muốn thiết lập môi trường ảo Python cho dự án, hãy làm theo các hướng dẫn dưới đây:
 
 ```sh
 python -m venv venv
@@ -92,112 +92,112 @@ source venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
-To run the game, use the Maze executable.
+Để chạy trò chơi, sử dụng tệp thực thi Maze.
 
 ```sh
 ./Maze
 ```
 
-### Game Navigation and Gameplay
+### Điều hướng trò chơi và Cách chơi
 
-Note: To ensure easy navigation between various screens, a back button is introduced which smoothly takes you to the previous screen.
+Lưu ý: Để đảm bảo điều hướng dễ dàng giữa các màn hình khác nhau, nút quay lại được giới thiệu sẽ đưa bạn mượt mà trở lại màn hình trước đó.
 
-#### Intro Screen
+#### Màn hình Giới thiệu
 
-The game starts with an Intro Screen:
+Trò chơi bắt đầu bằng Màn hình Giới thiệu:
 
-![Intro Screen](report/Intro.png)
+![Màn hình Giới thiệu](report/Intro.png)
 
-#### Main Menu
+#### Menu Chính
 
-After loading, you will be greeted with a Main Menu, from which you can choose to:
+Sau khi tải, bạn sẽ được chào mừng bằng Menu Chính, từ đó bạn có thể chọn:
 
-- Play
-- See the Fastest Solves in each Level
-- Customize the Game: Mute or Unmute
-- Quit
+- Chơi
+- Xem Những lần Giải nhanh nhất ở mỗi Cấp độ
+- Tùy chỉnh Trò chơi: Tắt âm hoặc Bật âm
+- Thoát
 
-You can select any of these by pressing on these buttons:
+Bạn có thể chọn bất kỳ cái nào trong số này bằng cách nhấn các nút này:
 
-![Main Menu](report/MainMenu.png)
+![Menu Chính](report/MainMenu.png)
 
-#### Game Level Selection
+#### Lựa chọn Cấp độ Trò chơi
 
-We have three levels of mazes from which you can choose:
+Chúng tôi có ba cấp độ mê cung mà bạn có thể chọn:
 
-![Game Level Selection](report/GameLevel.png)
+![Lựa chọn Cấp độ Trò chơi](report/GameLevel.png)
 
-#### The Game!
+#### Trò chơi!
 
-The game starts, waiting for you to navigate using the arrow keys or [W A S D]. The goal is to reach the door in the opposite corner. The _Score_ is measured in terms of the time taken to go to the opposite end: the Lower, the Better!
+Trò chơi bắt đầu, chờ bạn điều hướng bằng phím mũi tên hoặc [W A S D]. Mục tiêu là đạt đến cửa ở góc đối diện. _Điểm số_ được đo bằng thời gian cần thiết để đến đầu kia: càng thấp càng tốt!
 
-Various themes can be changed using the _Change Theme_ button. The music can be turned off by pressing the Music button.
+Có thể thay đổi các chủ đề khác nhau bằng nút _Thay đổi Chủ đề_. Âm nhạc có thể được tắt bằng cách nhấn nút Nhạc.
 
-Some examples of the game screens:
+Một số ví dụ về màn hình trò chơi:
 
-![Game Starts!](report/MazeGame.png)
+![Trò chơi Bắt đầu!](report/MazeGame.png)
 
-![Game Play](report/MazeGameThemes.png)
+![Cách chơi](report/MazeGameThemes.png)
 
-#### Game Over
+#### Trò chơi Kết thúc
 
-On reaching the opposite end, the game ends, and the time taken is displayed:
+Khi đạt đến đầu kia, trò chơi kết thúc và thời gian được hiển thị:
 
-![Game Over](report/GameOver.png)
+![Trò chơi Kết thúc](report/GameOver.png)
 
-#### Fastest Solves
+#### Những lần Giải nhanh nhất
 
-On clicking the Fastest Solves button on the Main Menu, you will see the Least Time taken to solve the various levels of the maze. An example screen:
+Khi nhấp vào nút Những lần Giải nhanh nhất trên Menu Chính, bạn sẽ thấy Thời gian tối thiểu để giải quyết các cấp độ mê cung khác nhau. Một ví dụ về màn hình:
 
-![Fastest Solves](report/HighScores.png)
+![Những lần Giải nhanh nhất](report/HighScores.png)
 
-#### Preferences
+#### Tùy chỉnh
 
-This window enables you to mute the music part of the game. You can do this by clicking on the red music button. If you want the music back on, click the button again.
+Cửa sổ này cho phép bạn tắt tiếng phần âm nhạc của trò chơi. Bạn có thể thực hiện điều này bằng cách nhấp vào nút nhạc màu đỏ. Nếu bạn muốn âm nhạc quay lại, hãy nhấp vào nút lần nữa.
 
-![Music On](report/PreferencesSoundOn.png)
+![Nhạc Bật](report/PreferencesSoundOn.png)
 
-![Music Off](report/PreferencesSoundOff.png)
+![Nhạc Tắt](report/PreferencesSoundOff.png)
 
-#### Quit
+#### Thoát
 
-On clicking this button, the game ends and the program terminates.
-
----
-
-## Various Implementations in the Code
-
-For the maze generation, I used the _Recursive Backtracking_ algorithm. This algorithm is a randomized version of the depth-first search algorithm. The algorithm starts at a random cell, chooses a random neighboring cell that has not been visited, creates a path between the two cells, and moves to the next cell. The algorithm continues until it has visited every cell in the grid. I have modified this algorithm slightly to make the wall size and the path size the same, which makes the maze look more appealing.
-
-For the pathfinding, I used the A\* algorithm. The A\* algorithm is a pathfinding algorithm that uses a heuristic to determine the next node to visit in a graph. The algorithm uses a priority queue to determine the next node to visit based on the cost of the path to that node and the heuristic value of the node. The algorithm continues until it reaches the goal node or there are no more nodes to visit.
-
-I have used the `heapq` module to implement the priority queue for the A\* algorithm.
-
-For the pygame functions, I referred to the official documentation of pygame and pygame-ce, mostly the latter for the updated functions and methods.
+Khi nhấp vào nút này, trò chơi kết thúc và chương trình chấm dứt.
 
 ---
 
-### Customizations in the Game
+## Các Triển khai Khác nhau trong Mã
 
-A list of all the special customizations implemented in the game:
+Để tạo mê cung, tôi đã sử dụng thuật toán _Recursive Backtracking_ (Quay lại Đệ quy). Thuật toán này là phiên bản ngẫu nhiên hóa của thuật toán tìm kiếm theo chiều sâu trước. Thuật toán bắt đầu ở một ô ngẫu nhiên, chọn một ô lân cận ngẫu nhiên chưa được truy cập, tạo đường dẫn giữa hai ô và chuyển sang ô tiếp theo. Thuật toán tiếp tục cho đến khi nó đã truy cập mọi ô trong lưới. Tôi đã sửa đổi thuật toán này một chút để làm cho kích thước tường và kích thước đường dẫn bằng nhau, làm cho mê cung trông hấp dẫn hơn.
 
-- Animation is when the player moves.
-- Dynamic Background of the Main Menu.
-- Music and Sound.
-- Themes for the Game.
-- High Scores.
-- Preferences.
-- Back Button for easy navigation.
-- Customized Fonts.
-- Responsive Buttons.
+Để tìm đường, tôi đã sử dụng thuật toán A\*. Thuật toán A\* là thuật toán tìm đường sử dụng heuristic để xác định nút tiếp theo cần truy cập trong biểu đồ. Thuật toán sử dụng hàng đợi ưu tiên để xác định nút tiếp theo cần truy cập dựa trên chi phí của đường dẫn đến nút đó và giá trị heuristic của nút. Thuật toán tiếp tục cho đến khi nó đạt đến nút mục tiêu hoặc không còn nút nào để truy cập.
+
+Tôi đã sử dụng mô-đun `heapq` để triển khai hàng đợi ưu tiên cho thuật toán A\*.
+
+Đối với các hàm pygame, tôi đã tham khảo tài liệu chính thức của pygame và pygame-ce, chủ yếu là tài liệu sau đây cho các hàm và phương thức được cập nhật.
 
 ---
 
-## References
+### Tùy chỉnh trong Trò chơi
 
-1. [Pygame Official Documentation](https://www.pygame.org/docs/)
-2. [Pygame CE Official Documentation](https://pyga.me/docs/)
-3. [Maze Generation Algorithms by `professor-l`](https://professor-l.github.io/mazes/)
-4. [A\* Algorithm](OtherResources/A*.md)
+Danh sách tất cả các tùy chỉnh đặc biệt được triển khai trong trò chơi:
+
+- Hoạt ảnh khi người chơi di chuyển.
+- Nền động của Menu Chính.
+- Âm nhạc và Âm thanh.
+- Chủ đề cho Trò chơi.
+- Điểm cao.
+- Tùy chỉnh.
+- Nút Quay lại để dễ dàng điều hướng.
+- Phông chữ Tùy chỉnh.
+- Các Nút Phản ứng.
+
+---
+
+## Tài liệu tham khảo
+
+1. [Tài liệu Chính thức của Pygame](https://www.pygame.org/docs/)
+2. [Tài liệu Chính thức của Pygame CE](https://pyga.me/docs/)
+3. [Các Thuật toán Tạo Mê Cung của `professor-l`](https://professor-l.github.io/mazes/)
+4. [Thuật toán A\*](OtherResources/A*.md)
 
 ---
