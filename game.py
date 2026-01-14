@@ -1,6 +1,10 @@
 from settings import *
 import time
 
+# Testcase selection state
+TestcaseSelectMode = False
+SelectedTestcaseIndex = 0
+
 # PYGAME LOOP
 start_ticks = pygame.time.get_ticks()
 while True:
@@ -25,7 +29,7 @@ while True:
 
         IntroMazeText_rect = IntroMazeText.get_rect()
         IntroMazeText_rect.midtop = (PygameLogo_rect.midbottom[0] - 20,
-                                     PygameLogo_rect.midbottom[1])  # Adjusting the Position of the position of the text
+                                     PygameLogo_rect.midbottom[1])
         screen.blit(IntroMazeText, IntroMazeText_rect)
 
         IntroLoadingBarBackground_rect = IntroLoadingBarBackground.get_rect()
@@ -41,10 +45,6 @@ while True:
         screen.fill("Black")
     elif int((MillisecondsPassed / 1000) * 4) / 4 == IntroTime + 0.25:
         main_menu.is_active = True
-        if not pygame.mixer.music.get_busy():
-            pygame.mixer.music.load(IntroMusicAddress)
-            pygame.mixer.music.set_volume(0.25 * int(GamePreferences.MusicState))
-            pygame.mixer.music.play(-1)
 
     # Main Menu
     if main_menu.is_active:
@@ -72,14 +72,59 @@ while True:
             main_menu.is_active = False
             time.sleep(ButtonDelay)
             Scores.is_active = True
-        elif MM_Preferences.is_Clicked():
-            main_menu.is_active = False
-            time.sleep(ButtonDelay)
-            GamePreferences.is_active = True
 
     # The Game!
     if Game.is_active:
-        if Game.LevelScreen:
+        # Testcase Selection Mode
+        if TestcaseSelectMode:
+            main_menu.BackgroundDisplay(MainMenuBackground[0])
+
+            # Lấy danh sách testcases
+            testcases = Game.GetTestcaseList()
+
+            if len(testcases) == 0:
+                # Không có testcase
+                no_tc_text = ButtonsFontActive.render("NO TESTCASES FOUND", True, 'WHITE')
+                screen.blit(no_tc_text, no_tc_text.get_rect(center=(WINDOW_DIM[0] / 2, WINDOW_DIM[1] / 2)))
+            else:
+                # Hiển thị danh sách testcases
+                title_text = ButtonsFontActive.render("SELECT TESTCASE:", True, 'YELLOW')
+                screen.blit(title_text, title_text.get_rect(center=(WINDOW_DIM[0] / 2, 150)))
+
+                for i, tc in enumerate(testcases):
+                    color = 'YELLOW' if i == SelectedTestcaseIndex else 'WHITE'
+                    tc_text = ButtonsFontInactive.render(f"> {tc}" if i == SelectedTestcaseIndex else f"  {tc}", True, color)
+                    screen.blit(tc_text, tc_text.get_rect(center=(WINDOW_DIM[0] / 2, 250 + i * 50)))
+
+                # Hướng dẫn
+                help_text = ButtonsFontInactive.render("UP/DOWN: Select | ENTER: Load | ESC: Back", True, 'WHITE')
+                screen.blit(help_text, help_text.get_rect(center=(WINDOW_DIM[0] / 2, WINDOW_DIM[1] - 100)))
+
+                # Xử lý phím
+                for event in PygameEvents:
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_UP:
+                            SelectedTestcaseIndex = (SelectedTestcaseIndex - 1) % len(testcases)
+                        elif event.key == pygame.K_DOWN:
+                            SelectedTestcaseIndex = (SelectedTestcaseIndex + 1) % len(testcases)
+                        elif event.key == pygame.K_RETURN:
+                            # Load testcase
+                            tc_path = f"testcases/{testcases[SelectedTestcaseIndex]}"
+                            if Game.ImportTestcase(tc_path):
+                                Game.Level = 1
+                                Game.LevelScreen = False
+                                Game.GameScreen = True
+                                TestcaseSelectMode = False
+                        elif event.key == pygame.K_ESCAPE:
+                            TestcaseSelectMode = False
+
+            # Back button (ở trên cùng)
+            Testcase_Back.display()
+            if Testcase_Back.is_Clicked():
+                TestcaseSelectMode = False
+                time.sleep(BackButtonDelay)
+
+        elif Game.LevelScreen:
             # Background Static
             main_menu.BackgroundDisplay(MainMenuBackground[0])
             # Buttons
@@ -88,6 +133,9 @@ while True:
             GLB_Difficult.display()
 
             GLB_Level_Back.display()
+
+            # Import Testcase Button
+            Game_Import.display()
 
             # Button Functionality Implementation
             if GLB_Easy.is_Clicked() or GLB_Medium.is_Clicked() or GLB_Difficult.is_Clicked():
@@ -101,14 +149,16 @@ while True:
                 Game.GameScreen = True
                 Game.SetMazeLevel()
                 time.sleep(ButtonDelay)
-                pygame.mixer.music.stop()
-                pygame.mixer.music.load(GameplayMusicAddress)
-                pygame.mixer.music.set_volume(0.2 * int(GamePreferences.MusicState))
-                pygame.mixer.music.play(-1)
             elif GLB_Level_Back.is_Clicked():
                 Game.is_active = False
                 main_menu.is_active = True
                 time.sleep(BackButtonDelay)
+            elif Game_Import.is_Clicked():
+                # Chuyển sang chế độ chọn testcase
+                TestcaseSelectMode = True
+                SelectedTestcaseIndex = 0
+                time.sleep(ButtonDelay)
+
         elif Game.GameScreen:
             screen.fill("Black")
 
@@ -125,25 +175,28 @@ while True:
 
             # Change Background Button
             Game_ChangeBackground.display()
+            # Auto Solve Button
+            Game_AutoSolve.display()
+            # Export Testcase Button
+            Game_Export.display()
             # Back Button
             Game_Back.display()
 
-            # Sound Button
-            if GamePreferences.MusicState and not Game_Sound.ButtonRect.collidepoint(MousePosition[0],
-                                                                                     MousePosition[1]):
-                Game_Sound.display()
-            else:
-                # Muted Symbol
-                screen.blit(SoundControlButtonImageOff.convert_alpha(),
-                            SoundControlButtonImageOff.convert_alpha().get_rect(center=GameSoundButtonPos))
-
-            if Game_Sound.is_Clicked():
-                GamePreferences.MusicState = not GamePreferences.MusicState
-                pygame.mixer.music.set_volume(0.25 * int(GamePreferences.MusicState))
-                time.sleep(SoundButtonDelay)
-            elif Game_ChangeBackground.is_Clicked():
+            if Game_ChangeBackground.is_Clicked():
                 Game.ChangeBackground()
-                time.sleep(SoundButtonDelay)
+                time.sleep(ButtonDelay)
+            elif Game_AutoSolve.is_Clicked():
+                Game.StartAutoSolve()
+                time.sleep(ButtonDelay)
+            elif Game_Export.is_Clicked():
+                exported_path = Game.ExportTestcase()
+                if exported_path:
+                    print(f"Testcase exported to: {exported_path}")
+                time.sleep(ButtonDelay)
+
+            # Thực hiện auto-solve step nếu đang auto-solve
+            if Game.AutoSolving:
+                Game.AutoSolveStep()
 
             # Back Button Functionality
             if Game_Back.is_Clicked():
@@ -151,16 +204,10 @@ while True:
                 Game.GameScreen = False
                 Game.LevelScreen = True
                 time.sleep(ButtonDelay)
-                pygame.mixer.music.stop()
-                pygame.mixer.music.load(IntroMusicAddress)
-                pygame.mixer.music.set_volume(0.25 * int(GamePreferences.MusicState))
-                pygame.mixer.music.play(-1)
 
             if Game.GameOverScreen:
-                pygame.mixer.music.stop()
-                pygame.mixer.music.load(GameOverMusicAddress)
-                pygame.mixer.music.set_volume(0.2 * int(GamePreferences.MusicState))
-                pygame.mixer.music.play()
+                pass
+
         elif Game.GameOverScreen:
             # Background Static
             main_menu.BackgroundDisplay(MainMenuBackground[0])
@@ -177,12 +224,31 @@ while True:
             Scores.UpdateScore(Game.StopwatchValue / 1000, Game.Level)
 
             # High Score String
-
             HighScoreString = ("NEW HIGH SCORE : " + str(int(Game.StopwatchValue / 1000)) + " SEC") if Scores.isUpdated else ("HIGH SCORE: " + Scores.HighScore(Game.Level) + " SEC")
 
             HighScoreButton = MainMenu.MainMenuButton(screen, HighScoreString, ButtonsFontInactive, ButtonsFontInactive,
                                                       MMButtonsImage, HighScoreButtonPos)
             HighScoreButton.display()
+
+            # Hiển thị Solution Path (Output)
+            solution_path, path_length = Game.GetSolutionInfo()
+
+            # Tiêu đề OUTPUT
+            output_title = ButtonsFontActive.render("SOLUTION (DFS OUTPUT):", True, 'YELLOW')
+            screen.blit(output_title, output_title.get_rect(center=(WINDOW_DIM[0] / 2, WINDOW_DIM[1] / 2 + 180)))
+
+            # Hiển thị đường đi (cắt ngắn nếu quá dài)
+            if solution_path and len(solution_path) > 50:
+                display_path = solution_path[:50] + "..."
+            else:
+                display_path = solution_path if solution_path else "N/A"
+
+            path_text = ButtonsFontInactive.render(f"Path: {display_path}", True, 'WHITE')
+            screen.blit(path_text, path_text.get_rect(center=(WINDOW_DIM[0] / 2, WINDOW_DIM[1] / 2 + 230)))
+
+            # Hiển thị độ dài đường đi
+            length_text = ButtonsFontInactive.render(f"Path Length: {path_length} steps", True, 'WHITE')
+            screen.blit(length_text, length_text.get_rect(center=(WINDOW_DIM[0] / 2, WINDOW_DIM[1] / 2 + 270)))
 
             # Back to Main Menu
             if GameOver_Back.is_Clicked():
@@ -193,33 +259,6 @@ while True:
                 Game.LevelScreen = True
                 main_menu.is_active = True
                 time.sleep(BackButtonDelay)
-                pygame.mixer.music.stop()
-                pygame.mixer.music.load(IntroMusicAddress)
-                pygame.mixer.music.set_volume(0.25 * int(GamePreferences.MusicState))
-                pygame.mixer.music.play(-1)
-
-    # Preferences
-    if GamePreferences.is_active:
-        # Background Static
-        main_menu.BackgroundDisplay(MainMenuBackground[0])
-
-        GP_MusicText.display()
-        GP_Back.display()
-        if GamePreferences.MusicState and not GP_Sound.ButtonRect.collidepoint(MousePosition[0], MousePosition[1]):
-            GP_Sound.display()
-        else:
-            # Muted Symbol
-            screen.blit(SoundControlButtonImageOff.convert_alpha(), SoundControlButtonImageOff.convert_alpha().get_rect(
-                center=((WINDOW_DIM[0] / 2 + 300), (WINDOW_DIM[1] / 2 - 100))))
-
-        if GP_Sound.is_Clicked():
-            GamePreferences.MusicState = not GamePreferences.MusicState
-            pygame.mixer.music.set_volume(0.25 * int(GamePreferences.MusicState))
-            time.sleep(SoundButtonDelay)
-        elif GP_Back.is_Clicked():
-            GamePreferences.is_active = False
-            main_menu.is_active = True
-            time.sleep(BackButtonDelay)
 
     # Scores
     if Scores.is_active:

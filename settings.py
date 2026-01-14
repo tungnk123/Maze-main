@@ -8,7 +8,6 @@ import os
 import Modules.MainMenu as MainMenu
 import Modules.PlayGame as PlayGame
 import Modules.Scores as Scores
-import Modules.Preferences as Preferences
 
 # Suppress stderr
 sys.stderr = open(os.devnull, 'w')
@@ -23,7 +22,6 @@ if not os.path.isfile('data/LeastTimes.txt'):
 
 # Initializing Pygame
 pygame.init()
-pygame.mixer.init()
 
 
 # Defining a Quit function, which quits the pygame
@@ -59,12 +57,6 @@ BackButtonBackground = LoadScaledImage("media/images/Buttons/MainMenuButton.png"
 BackButtonPos = ((WINDOW_DIM[0] / 2), (WINDOW_DIM[1] * 5 / 6))
 BackButtonDelay = 0.5
 
-# Sounds
-ButtonSound = pygame.mixer.Sound("media/sounds/ButtonClick.wav")
-
-SoundControlButtonImageOn = LoadScaledImage("media/images/Buttons/MusicOn.png", scaling_dim=(100, 100))
-SoundControlButtonImageOff = LoadScaledImage("media/images/Buttons/MusicOff.png", scaling_dim=(100, 100))
-
 # Intro
 IntroTime = 3
 PygameLogo = LoadScaledImage("media/images/Logos/pygame_powered.png", scaling_factor=(1 / 3))
@@ -78,9 +70,6 @@ IntroLoadingBarBackground = LoadScaledImage("media/images/IntroLoadingBar/IntroL
                                             scaling_dim=(500, 50))
 
 # Main Menu
-
-#    Music
-IntroMusicAddress = "media/sounds/GameIntroMusic.wav"
 
 #    Background
 MainMenuBackground = [LoadScaledImage(f"media/videos/MainMenuBackgroundDimmed/frame{i}.jpg", scaling_dim=WINDOW_DIM) for
@@ -112,7 +101,6 @@ PreferencesPos = (WINDOW_DIM[0] / 2, 550)
 QuitPos = (WINDOW_DIM[0] / 2, 650)
 
 # Game!
-GameplayMusicAddress = "media/sounds/GameplayMusic.wav"
 PlayerName = "MrStark"  # Default Name
 
 SolutionPathFileAddress = "data/path.txt"
@@ -125,7 +113,6 @@ GameStopwatchFont = pygame.font.Font("media/fonts/ArialRoundedMTBold.ttf", 35)
 TimeTakenButtonPos = (WINDOW_DIM[0] / 2, WINDOW_DIM[1] / 2 - 25)
 
 GameOverPNG_Address = "media/images/GameOver.png"
-GameOverMusicAddress = "media/sounds/GameOver.wav"
 
 HighScoreButtonPos = (WINDOW_DIM[0] / 2, WINDOW_DIM[1] / 2 + 75)
 
@@ -142,73 +129,66 @@ pygame.display.set_caption("Maze!")
 
 # MAIN MENU
 #    Main Menu Buttons
-MM_Play = MainMenu.MainMenuButton(screen, "PLAY", ButtonsFontInactive, ButtonsFontActive, MMButtonsImage, PlayPos,
-                                  ButtonSound)
+MM_Play = MainMenu.MainMenuButton(screen, "PLAY", ButtonsFontInactive, ButtonsFontActive, MMButtonsImage, PlayPos)
 MM_Scores = MainMenu.MainMenuButton(screen, "FASTEST SOLVES", ButtonsFontInactive, ButtonsFontActive, MMButtonsImage,
-                                    ScoresPos,
-                                    ButtonSound)
-MM_Preferences = MainMenu.MainMenuButton(screen, "PREFERENCES", ButtonsFontInactive, ButtonsFontActive, MMButtonsImage,
-                                         PreferencesPos, ButtonSound)
-MM_Quit = MainMenu.MainMenuButton(screen, "QUIT", ButtonsFontInactive, ButtonsFontActive, MMButtonsImage, QuitPos,
-                                  ButtonSound)
+                                    ScoresPos)
+MM_Quit = MainMenu.MainMenuButton(screen, "QUIT", ButtonsFontInactive, ButtonsFontActive, MMButtonsImage, PreferencesPos)
 #    Main Menu Screen
-main_menu = MainMenu.MainMenu(screen, (MM_Play, MM_Scores, MM_Preferences, MM_Quit))
+main_menu = MainMenu.MainMenu(screen, (MM_Play, MM_Scores, MM_Quit))
 
 # The GAME!!!
 PlayerImagesPath = "media/images/Player"
 MazeImagesPath = "media/images/MazeBackground"
 Game = PlayGame.GamePlay(screen, PlayerName, PlayerImagesPath, MazeImagesPath, SolutionPathFileAddress, GameOverPNG_Address)
 #    Game Level Buttons
-EasyPos = (WINDOW_DIM[0] / 2, 100)
-MediumPos = (WINDOW_DIM[0] / 2, 300)
+EasyPos = (WINDOW_DIM[0] / 2, 200)
+MediumPos = (WINDOW_DIM[0] / 2, 350)
 DifficultPos = (WINDOW_DIM[0] / 2, 500)
-GLB_Easy = MainMenu.MainMenuButton(screen, "EASY (20 X 20)", ButtonsFontInactive, ButtonsFontActive, MMButtonsImage, EasyPos,
-                                   ButtonSound)
+GLB_Easy = MainMenu.MainMenuButton(screen, "EASY (20 X 20)", ButtonsFontInactive, ButtonsFontActive, MMButtonsImage, EasyPos)
 GLB_Medium = MainMenu.MainMenuButton(screen, "MEDIUM (40 X 40)", ButtonsFontInactive, ButtonsFontActive, MMButtonsImage,
-                                     MediumPos, ButtonSound)
+                                     MediumPos)
 GLB_Difficult = MainMenu.MainMenuButton(screen, "DIFFICULT (60 X 60)", ButtonsFontInactive, ButtonsFontActive, MMButtonsImage,
-                                        DifficultPos, ButtonSound)
+                                        DifficultPos)
 
+# Level Selection Back Button (ở trên cùng)
+LevelBackButtonPos = (WINDOW_DIM[0] / 2, 50)
 GLB_Level_Back = MainMenu.MainMenuButton(screen, "BACK", ButtonsFontInactive, ButtonsFontActive, BackButtonBackground,
-                                         BackButtonPos, ButtonSound)
+                                         LevelBackButtonPos)
 
 #    Game
 GameRightBackground = MainMenuBackground[0].subsurface(pygame.Rect(screen.get_height() + Game.XShift, 0, screen.get_width() - (screen.get_height() + Game.XShift), screen.get_height()))
 
 # Game Over
-GameOver_Back = MainMenu.MainMenuButton(screen, "MAIN MENU", ButtonsFontInactive, ButtonsFontActive, BackButtonBackground, BackButtonPos, ButtonSound)
+GameOver_Back = MainMenu.MainMenuButton(screen, "MAIN MENU", ButtonsFontInactive, ButtonsFontActive, BackButtonBackground, BackButtonPos)
 
 #        GameButtons
-GameSoundButtonPos = ((screen.get_height() + screen.get_width()) / 2 + Game.XShift / 2, screen.get_height() / 2 + 100)
-Game_Sound = MainMenu.MainMenuButton(screen, "", ButtonsFontInactive, ButtonsFontActive, SoundControlButtonImageOn,
-                                     GameSoundButtonPos, ButtonSound)
-
 GameBackButtonPos = ((screen.get_height() + screen.get_width()) / 2 + Game.XShift / 2, BackButtonPos[1])
 Game_Back = MainMenu.MainMenuButton(screen, "BACK", ButtonsFontInactive, ButtonsFontActive, BackButtonBackground,
-                                    GameBackButtonPos, ButtonSound)
+                                    GameBackButtonPos)
 
 
 GameButtonImage = LoadScaledImage("media/images/Buttons/MainMenuButton.png", scaling_dim=(300, 100))
 
 ChangeThemeButtonPos = ((screen.get_height() + screen.get_width()) / 2 + Game.XShift / 2, 300)
-Game_ChangeBackground = MainMenu.MainMenuButton(screen, "CHANGE THEME", ButtonsFontInactive, ButtonsFontActive, GameButtonImage, ChangeThemeButtonPos, ButtonSound)
+Game_ChangeBackground = MainMenu.MainMenuButton(screen, "CHANGE THEME", ButtonsFontInactive, ButtonsFontActive, GameButtonImage, ChangeThemeButtonPos)
+
+# Auto Solve Button (DFS)
+AutoSolveButtonPos = ((screen.get_height() + screen.get_width()) / 2 + Game.XShift / 2, 400)
+Game_AutoSolve = MainMenu.MainMenuButton(screen, "AUTO SOLVE (DFS)", ButtonsFontInactive, ButtonsFontActive, GameButtonImage, AutoSolveButtonPos)
+
+# Export Testcase Button
+ExportButtonPos = ((screen.get_height() + screen.get_width()) / 2 + Game.XShift / 2, 500)
+Game_Export = MainMenu.MainMenuButton(screen, "EXPORT TESTCASE", ButtonsFontInactive, ButtonsFontActive, GameButtonImage, ExportButtonPos)
+
+# Import Testcase Button (sẽ hiển thị ở Level Selection)
+ImportButtonPos = (WINDOW_DIM[0] / 2, 650)
+Game_Import = MainMenu.MainMenuButton(screen, "IMPORT TESTCASE", ButtonsFontInactive, ButtonsFontActive, MMButtonsImage, ImportButtonPos)
+
+# Testcase Selection Back Button (ở trên cùng)
+TestcaseBackButtonPos = (WINDOW_DIM[0] / 2, 50)
+Testcase_Back = MainMenu.MainMenuButton(screen, "BACK", ButtonsFontInactive, ButtonsFontActive, BackButtonBackground, TestcaseBackButtonPos)
 
 
 # Scores
 Scores = Scores.HighScores(screen, HighScoresCSV_Address, ButtonsFontActive)
-Scores_Back = MainMenu.MainMenuButton(screen, "BACK", ButtonsFontInactive, ButtonsFontActive, BackButtonBackground, BackButtonPos, ButtonSound)
-
-# Preferences
-GamePreferences = Preferences.Preferences(screen)
-SoundButtonBackground = LoadScaledImage("media/images/Buttons/MainMenuButton.png", scaling_dim=(450, 100))
-
-GP_MusicText = MainMenu.MainMenuButton(screen, "MUSIC:", ButtonsFontActive, ButtonsFontActive, SoundButtonBackground,
-                                       (WINDOW_DIM[0] / 2 - 100, WINDOW_DIM[1] / 2 - 100))
-
-SoundClickTimestamp = 10
-GP_Sound = MainMenu.MainMenuButton(screen, "", ButtonsFontInactive, ButtonsFontActive, SoundControlButtonImageOn,
-                                   ((WINDOW_DIM[0] / 2 + 300), (WINDOW_DIM[1] / 2 - 100)), ButtonSound)
-SoundButtonDelay = 0.3
-
-GP_Back = MainMenu.MainMenuButton(screen, "BACK", ButtonsFontInactive, ButtonsFontActive, BackButtonBackground,
-                                  BackButtonPos, ButtonSound)
+Scores_Back = MainMenu.MainMenuButton(screen, "BACK", ButtonsFontInactive, ButtonsFontActive, BackButtonBackground, BackButtonPos)

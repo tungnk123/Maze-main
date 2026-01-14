@@ -24,7 +24,8 @@ class MainMenuButton:
 
     def is_Clicked(self):
         if self.ButtonRect.collidepoint(pygame.mouse.get_pos()) and (pygame.mouse.get_pressed()[0] == 1):
-            self.ButtonSound.play()
+            if self.ButtonSound:
+                self.ButtonSound.play()
             return True
         else:
             return False
