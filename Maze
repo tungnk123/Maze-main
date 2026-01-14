@@ -10,7 +10,7 @@ mkdir -p "$MAZE_DIR/data"
 [ ! -f "$MAZE_DIR/data/path.txt" ] && : > "$MAZE_DIR/data/path.txt"
 
 # Activate the virtual environment
-source "$MAZE_DIR/.venv/bin/activate" || exit
+source "$MAZE_DIR/venv/bin/activate" || exit
 
 # Run the game script
-python game.py
+python3 game.py
