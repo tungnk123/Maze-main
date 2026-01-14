@@ -2,7 +2,7 @@ import pygame
 
 
 class MainMenuButton:
-    def __init__(self, screen: pygame.Surface, ButtonTitle: str, ButtonsFontInactive: pygame.Font, ButtonsFontActive: pygame.Font, ButtonImage: pygame.Surface, Pos: tuple, Sound: pygame.mixer.Sound = None):
+    def __init__(self, screen: pygame.Surface, ButtonTitle: str, ButtonsFontInactive: pygame.font.Font, ButtonsFontActive: pygame.font.Font, ButtonImage: pygame.Surface, Pos: tuple, Sound: pygame.mixer.Sound = None):
 
         self.screen = screen
         self.ButtonTextFontInactive = ButtonsFontInactive.render(ButtonTitle, True, "White")
